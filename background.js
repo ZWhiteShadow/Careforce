@@ -1,23 +1,37 @@
 let isSelectionMode = false;
 
+function injectContentScripts(tabId) {
+  chrome.scripting.executeScript({
+    target: { tabId: tabId },
+    files: ['content.js', 'selector.js']
+  }, () => {
+    if (chrome.runtime.lastError) {
+      console.error('Script injection failed:', chrome.runtime.lastError.message);
+    } else {
+      console.log('Content scripts injected successfully');
+    }
+  });
+}
+
 chrome.action.onClicked.addListener((tab) => {
-  console.log('Extension icon clicked, isSelectionMode:', isSelectionMode);
-  if (isSelectionMode) {
-    chrome.tabs.sendMessage(tab.id, { action: 'stopSelection' });
-    isSelectionMode = false;
-  } else {
-    chrome.tabs.sendMessage(tab.id, { action: 'toggleHide' });
-  }
+  injectContentScripts(tab.id);
 });
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log('Message received in background:', request);
   if (request.action === 'startSelection') {
-    isSelectionMode = true;
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      chrome.tabs.sendMessage(tabs[0].id, { action: 'startSelection' });
+      if (tabs[0]) {
+        injectContentScripts(tabs[0].id);
+        chrome.tabs.sendMessage(tabs[0].id, { action: 'startSelection' }, (response) => {
+          if (chrome.runtime.lastError) {
+            console.error('Error sending startSelection message:', chrome.runtime.lastError.message);
+          } else {
+            console.log('startSelection message sent successfully');
+          }
+        });
+      }
     });
-    sendResponse({ status: 'Selection mode started' });
   } else if (request.action === 'saveSelectors') {
     chrome.storage.sync.set({ hiddenSelectors: request.selectors }, () => {
       chrome.tabs.sendMessage(sender.tab.id, { action: 'updateSelectors', selectors: request.selectors });

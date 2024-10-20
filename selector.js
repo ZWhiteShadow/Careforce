@@ -3,9 +3,14 @@ console.log('Selector script loaded');
 let selectedElements = [];
 
 function enableSelectionMode() {
-  console.log('Selection mode enabled');
-  document.body.style.cursor = 'crosshair';
-  document.addEventListener('click', handleElementClick, true);
+  console.log('Attempting to enable selection mode');
+  try {
+    document.body.style.cursor = 'crosshair';
+    document.addEventListener('click', handleElementClick, true);
+    console.log('Selection mode enabled successfully');
+  } catch (error) {
+    console.error('Error enabling selection mode:', error);
+  }
 }
 
 function handleElementClick(event) {
@@ -52,7 +57,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log('Message received in selector:', request);
   if (request.action === 'startSelection') {
     enableSelectionMode();
+    sendResponse({ status: 'Selection mode started' });
   } else if (request.action === 'stopSelection') {
     disableSelectionMode();
+    sendResponse({ status: 'Selection mode stopped' });
   }
+  return true;
 });
