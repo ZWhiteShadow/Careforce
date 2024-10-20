@@ -15,7 +15,7 @@
       "matches": [
         "https://srm.lightning.force.com/*"
       ],
-      "js": ["content.js"],
+      "js": ["content.js", "selector.js"],
       "css": ["styles.css"]
     }
   ],
