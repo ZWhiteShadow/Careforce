@@ -1,11 +1,15 @@
+console.log('Selector script loaded');
+
 let selectedElements = [];
 
 function enableSelectionMode() {
+  console.log('Selection mode enabled');
   document.body.style.cursor = 'crosshair';
   document.addEventListener('click', handleElementClick, true);
 }
 
 function handleElementClick(event) {
+  console.log('Element clicked:', event.target);
   event.preventDefault();
   event.stopPropagation();
   
@@ -38,12 +42,14 @@ function generateSelector(element) {
 }
 
 function disableSelectionMode() {
+  console.log('Selection mode disabled');
   document.body.style.cursor = 'default';
   document.removeEventListener('click', handleElementClick, true);
   chrome.runtime.sendMessage({action: 'saveSelectors', selectors: selectedElements});
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  console.log('Message received in selector:', request);
   if (request.action === 'startSelection') {
     enableSelectionMode();
   } else if (request.action === 'stopSelection') {
