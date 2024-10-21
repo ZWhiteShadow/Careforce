@@ -1,6 +1,7 @@
 let hiddenSelectors = [];
 let selectedElements = [];
 let hiddenElements = [];
+let isSelectionMode = false;
 
 function generateSelector(element) {
   if (element.id) return `#${element.id}`;
@@ -22,11 +23,14 @@ function generateSelector(element) {
 
 function enableSelectionMode() {
   console.log('Selection mode enabled');
+  isSelectionMode = true;
   document.body.style.cursor = 'crosshair';
   document.addEventListener('click', handleElementClick, true);
 }
 
 function handleElementClick(event) {
+  if (!isSelectionMode) return;
+  
   console.log('Element clicked:', event.target);
   event.preventDefault();
   event.stopPropagation();
@@ -42,6 +46,7 @@ function handleElementClick(event) {
 
 function disableSelectionMode() {
   console.log('Selection mode disabled');
+  isSelectionMode = false;
   document.body.style.cursor = 'default';
   document.removeEventListener('click', handleElementClick, true);
 }
@@ -51,7 +56,9 @@ function hideSelectedElements() {
     const elements = document.querySelectorAll(selector);
     elements.forEach(element => {
       element.style.display = 'none';
-      hiddenElements.push(element);
+      if (!hiddenElements.includes(element)) {
+        hiddenElements.push(element);
+      }
     });
   });
   saveSelections();

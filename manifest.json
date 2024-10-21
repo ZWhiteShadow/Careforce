@@ -17,5 +17,11 @@
   },
   "background": {
     "service_worker": "background.js"
-  }
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://srm.lightning.force.com/*"],
+      "js": ["content.js"]
+    }
+  ]
 }

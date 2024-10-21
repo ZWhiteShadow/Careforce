@@ -63,14 +63,7 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (changeInfo.status === 'complete' && tab.url.includes('srm.lightning.force.com')) {
-    chrome.scripting.executeScript({
-      target: { tabId: tabId },
-      files: ['content.js']
-    });
-  }
-});
+// Remove the tabs.onUpdated listener as we're now using content_scripts in manifest
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log('Message received in background:', request);
