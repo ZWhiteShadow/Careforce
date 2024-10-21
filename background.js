@@ -48,6 +48,30 @@ chrome.action.onClicked.addListener((tab) => {
   injectContentScripts(tab.id);
 });
 
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.declarativeContent.onPageChanged.removeRules(undefined, () => {
+    chrome.declarativeContent.onPageChanged.addRules([
+      {
+        conditions: [
+          new chrome.declarativeContent.PageStateMatcher({
+            pageUrl: { hostEquals: 'srm.lightning.force.com' },
+          })
+        ],
+        actions: [new chrome.declarativeContent.ShowPageAction()]
+      }
+    ]);
+  });
+});
+
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.status === 'complete' && tab.url.includes('srm.lightning.force.com')) {
+    chrome.scripting.executeScript({
+      target: { tabId: tabId },
+      files: ['content.js']
+    });
+  }
+});
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log('Message received in background:', request);
   if (request.action === 'startSelection') {

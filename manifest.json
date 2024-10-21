@@ -3,7 +3,12 @@
   "name": "SRM Salesforce Page Hider",
   "version": "1.0",
   "description": "Hide parts of SRM Salesforce pages",
-  "permissions": ["activeTab", "storage", "scripting"],
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting",
+    "declarativeContent"
+  ],
   "host_permissions": [
     "https://srm.lightning.force.com/*"
   ],
