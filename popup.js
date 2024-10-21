@@ -11,8 +11,10 @@ document.getElementById('selectButton').addEventListener('click', () => {
     console.log('Response from background:', response);
     if (chrome.runtime.lastError) {
       console.error('Error sending startSelection message:', chrome.runtime.lastError.message);
+    } else if (response && response.status === 'Error') {
+      console.error('Error starting selection mode:', response.error);
     } else {
-      console.log('startSelection message sent successfully');
+      console.log('startSelection process completed successfully');
     }
   });
   window.close();

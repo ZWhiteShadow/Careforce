@@ -25,3 +25,10 @@ chrome.storage.sync.get('hiddenSelectors', ({ hiddenSelectors: savedSelectors })
     toggleHiddenElements();
   }
 });
+
+console.log('Content script loaded');
+
+// Add this at the end of the file
+chrome.runtime.sendMessage({ action: 'contentScriptReady' }, (response) => {
+  console.log('Background script acknowledged content script ready');
+});
