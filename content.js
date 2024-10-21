@@ -32,3 +32,5 @@ console.log('Content script loaded');
 chrome.runtime.sendMessage({ action: 'contentScriptReady' }, (response) => {
   console.log('Background script acknowledged content script ready');
 });
+
+// Include all the code from selector.js here
