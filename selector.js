@@ -3,9 +3,14 @@ console.log('Selector script loaded');
 let selectedElements = [];
 
 function enableSelectionMode() {
-  console.log('Selection mode enabled');
-  document.body.style.cursor = 'crosshair';
-  document.addEventListener('click', handleElementClick, true);
+  console.log('Attempting to enable selection mode');
+  try {
+    document.body.style.cursor = 'crosshair';
+    document.addEventListener('click', handleElementClick, true);
+    console.log('Selection mode enabled successfully');
+  } catch (error) {
+    console.error('Error enabling selection mode:', error);
+  }
 }
 
 function handleElementClick(event) {
@@ -45,21 +50,7 @@ function disableSelectionMode() {
   console.log('Selection mode disabled');
   document.body.style.cursor = 'default';
   document.removeEventListener('click', handleElementClick, true);
-}
-
-function hideSelectedElements() {
-  selectedElements.forEach(selector => {
-    const elements = document.querySelectorAll(selector);
-    elements.forEach(element => {
-      element.style.display = 'none';
-    });
-  });
-}
-
-function saveSelections() {
-  chrome.storage.sync.set({ hiddenSelectors: selectedElements }, () => {
-    console.log('Selections saved:', selectedElements);
-  });
+  chrome.runtime.sendMessage({action: 'saveSelectors', selectors: selectedElements});
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -67,19 +58,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'startSelection') {
     enableSelectionMode();
     sendResponse({ status: 'Selection mode started' });
-  } else if (request.action === 'confirmSelection') {
+  } else if (request.action === 'stopSelection') {
     disableSelectionMode();
-    hideSelectedElements();
-    saveSelections();
-    sendResponse({ status: 'Selection confirmed and hidden' });
+    sendResponse({ status: 'Selection mode stopped' });
   }
   return true;
-});
-
-// Load and apply saved selections on page load
-chrome.storage.sync.get('hiddenSelectors', ({ hiddenSelectors }) => {
-  if (hiddenSelectors) {
-    selectedElements = hiddenSelectors;
-    hideSelectedElements();
-  }
 });

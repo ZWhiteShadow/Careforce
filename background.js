@@ -94,21 +94,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     console.log('Content script ready in tab:', sender.tab.id);
     contentScriptsInjected = true;
     sendResponse({ status: 'Acknowledged' });
-  } else if (request.action === 'confirmSelection') {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      if (tabs[0]) {
-        sendMessageWithRetry(tabs[0].id, { action: 'confirmSelection' })
-          .then((response) => {
-            console.log('confirmSelection message sent successfully', response);
-            sendResponse({ status: 'Selection confirmed' });
-          })
-          .catch((error) => {
-            console.error('Error in confirmSelection process:', error);
-            sendResponse({ status: 'Error', error: error.message });
-          });
-      }
-    });
-    return true; // Indicates that the response will be sent asynchronously
   }
   return true; // Keeps the message channel open for asynchronous responses
 });
